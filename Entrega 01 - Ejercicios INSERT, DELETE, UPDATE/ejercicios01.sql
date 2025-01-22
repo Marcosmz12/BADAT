@@ -65,8 +65,39 @@ DELETE cliente
 WHERE codigo_cliente = 40;
 
 --Ejercicio 07
+ALTER TABLE linea_pedido
+ADD total_linea MONEY ;
 
+UPDATE linea_pedido
+SET total_linea = precio_unidad * cantidad * (1.21 );
 
+--Ejercicio 08
+INSERT INTO oficina(codigo_oficina, ciudad, pais, region, codigo_postal, telefono, linea_direccion1,linea_direccion2)
+VALUES ('GRN-ES', 'Granada', 'España', 'Granada', '18012', '+34 40 21 3002', 'Pl. de San Lázaro', ' s/n, Beiro, 18012 Granada');
+
+INSERT INTO empleado(codigo_empleado, nombre, apellido1, apellido2, extension, email, codigo_oficina, codigo_jefe, puesto)
+VALUES (33, 'Marcos', 'Molis', 'Zapata', '0412', 'marcosmz@jardineria.es', 'GRN-ES', 3, 'Representante Ventas' );
+
+INSERT INTO empleado(codigo_empleado, nombre, apellido1, apellido2, extension, email, codigo_oficina, codigo_jefe, puesto)
+VALUES (34, 'Jose', 'Garcia', 'Molina', '2708', 'josemolina@jardineria.es', 'GRN-ES', 3, 'Representante Ventas' );
+
+INSERT INTO empleado(codigo_empleado, nombre, apellido1, apellido2, extension, email, codigo_oficina, codigo_jefe, puesto)
+VALUES (35, 'Miguel', 'Ruiz', 'Fernandez', '8790', 'miguel@jardineria.es', 'GRN-ES', 3, 'Representante Ventas' );
+
+--Ejercicio 09
+INSERT INTO cliente(codigo_cliente, nombre_cliente, nombre_contacto, apellido_contacto, telefono, fax, linea_direccion1, linea_direccion2, ciudad, region, pais, codigo_postal, codigo_empleado_rep_ventas, limite_credito) 
+VALUES (40,'Mas Que Jardines','Benito','Camela','690805123','958526904','Av. Dr. Oloriz, 25',NULL,'Granada','Granada','España','18012',33, 510.00);
+
+INSERT INTO cliente(codigo_cliente, nombre_cliente, nombre_contacto, apellido_contacto, telefono, fax, linea_direccion1, linea_direccion2, ciudad, region, pais, codigo_postal, codigo_empleado_rep_ventas, limite_credito) 
+VALUES (41,'Jardinespatos S.L','Empel','Otas','657901245','958098564','P.º de Cartuja, s/n, Beiro',NULL,'Granada','Granada','España','18011',34, 700.00);
+
+INSERT INTO cliente(codigo_cliente, nombre_cliente, nombre_contacto, apellido_contacto, telefono, fax, linea_direccion1, linea_direccion2, ciudad, region, pais, codigo_postal, codigo_empleado_rep_ventas, limite_credito) 
+VALUES (39,'Jardinespatos S.L','Al','Cólico','692708458','958724807','C. Periodista Daniel Saucedo Aranda, s/n, Chana',NULL,'Granada','Granada','España','18012',35, 850.00);
+
+--Ejercicio 10
+-- Si , porque cambiamos la foreingkey y por eso nos deja eliminarlo
+DELETE cliente
+WHERE codigo_cliente = 39;
 
 
 --SELECT
