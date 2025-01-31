@@ -44,6 +44,34 @@ INNER JOIN cliente ON cliente.codigo_cliente = pedido.codigo_cliente
 WHERE fecha_entrega > fecha_esperada;
 
 --Ejercicio 09
-SELECT oficina.linea_direccion1, oficina.linea_direccion2 , cliente.ciudad
-FROM
+SELECT oficina.linea_direccion1, oficina.linea_direccion2 , oficina.ciudad
+FROM oficina
+INNER JOIN empleado ON empleado.codigo_oficina = oficina.codigo_oficina
+INNER JOIN cliente ON cliente.codigo_empleado_rep_ventas = empleado.codigo_empleado 
+WHERE cliente.ciudad LIKE 'Fuenlabrada';
 
+--Ejercicio10
+SELECT cliente.nombre_cliente, producto.gama
+FROM producto
+INNER JOIN linea_pedido ON linea_pedido.codigo_producto = producto.codigo_producto
+INNER JOIN pedido ON pedido.codigo_pedido = linea_pedido.codigo_pedido
+INNER JOIN cliente ON cliente.codigo_cliente = pedido.codigo_cliente
+GROUP BY cliente.nombre_cliente, producto.gama
+ORDER BY producto.gama ASC;
+
+--Ejercicio 11
+SELECT oficina.codigo_oficina, oficina.ciudad, oficina.pais
+FROM oficina
+INNER JOIN empleado ON empleado.codigo_oficina = oficina.codigo_oficina
+INNER JOIN cliente ON cliente.codigo_empleado_rep_ventas = empleado.codigo_empleado
+INNER JOIN pedido ON pedido.codigo_cliente = cliente.codigo_cliente
+INNER JOIN linea_pedido ON linea_pedido.codigo_pedido = pedido.codigo_pedido
+INNER JOIN producto ON producto.codigo_producto = linea_pedido.codigo_producto
+WHERE empleado.puesto LIKE 'Representante Ventas' AND producto.gama LIKE 'Frutales'
+GROUP BY oficina.codigo_oficina, oficina.ciudad, oficina.pais;
+
+--Ejercicio 12
+SELECT empleado.codigo_empleado, empleado.nombre, empleado.apellido1, empleado.apellido2, empleado.extension, empleado.email, empleado.codigo_oficina, empleado.codigo_jefe, empleado.puesto
+FROM empleado
+LEFT JOIN cliente ON cliente.codigo_empleado_rep_ventas = empleado.codigo_empleado
+WHERE cliente.codigo_empleado_rep_ventas IS NULL;
