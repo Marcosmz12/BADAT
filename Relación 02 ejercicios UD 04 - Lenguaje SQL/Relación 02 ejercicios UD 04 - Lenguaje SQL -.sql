@@ -32,7 +32,9 @@ FROM cliente
 WHERE ciudad LIKE 'Madrid' AND codigo_empleado_rep_ventas = 11 OR codigo_empleado_rep_ventas = 30;
 
 --Ejercicio 07
-SELECT cliente.nombre_cliente, CONCAT(empleado.nombre, ' ' , empleado.apellido1,' ' , empleado.apellido2) AS  nombre_completo_empleado , oficina.ciudad
+SELECT cliente.nombre_cliente, 
+CONCAT(empleado.nombre, ' ' , empleado.apellido1,' ' , empleado.apellido2) AS  nombre_completo_empleado , 
+oficina.ciudad
 FROM oficina
 INNER JOIN empleado ON empleado.codigo_oficina = oficina.codigo_oficina
 INNER JOIN cliente ON cliente.codigo_empleado_rep_ventas = empleado.codigo_empleado;
@@ -75,3 +77,13 @@ SELECT empleado.codigo_empleado, empleado.nombre, empleado.apellido1, empleado.a
 FROM empleado
 LEFT JOIN cliente ON cliente.codigo_empleado_rep_ventas = empleado.codigo_empleado
 WHERE cliente.codigo_empleado_rep_ventas IS NULL;
+
+--Ejercio 13
+SELECT CONCAT(empleado.nombre,', ',empleado.apellido1,', ',empleado.apellido2) AS nombre_empleado, 
+CONCAT(jefe.nombre,', ',jefe.apellido1,', ',jefe.apellido2)AS nombre_jefe , 
+CONCAT(jefazo.nombre,', ',jefazo.apellido1,', ',jefazo.apellido2) AS nombre_jefe_jefe
+FROM empleado
+LEFT JOIN empleado jefe ON empleado.codigo_jefe = jefe.codigo_empleado
+LEFT JOIN empleado jefazo ON jefe.codigo_jefe = jefazo.codigo_empleado;
+
+
