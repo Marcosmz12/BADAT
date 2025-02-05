@@ -39,6 +39,7 @@ FROM oficina
 INNER JOIN empleado ON empleado.codigo_oficina = oficina.codigo_oficina
 INNER JOIN cliente ON cliente.codigo_empleado_rep_ventas = empleado.codigo_empleado;
 
+
 --Ejercicio 08
 SELECT cliente.nombre_cliente, pedido.fecha_entrega, pedido.fecha_esperada
 FROM pedido
