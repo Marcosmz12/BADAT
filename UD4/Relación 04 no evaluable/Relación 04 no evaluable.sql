@@ -50,4 +50,4 @@ WHERE precio > (
 SELECT AVG(producto.precio)
 FROM producto
 INNER JOIN fabricante ON fabricante.codigo = producto.cod_fabricante
-WHERE fabricante.nombre = 'Asus') AND fabricante.nombre = 'Asus' ;
+WHERE fabricante.nombre = 'Asus') AND fabricante.nombre = 'Asus';
