@@ -75,3 +75,54 @@ WHERE nombre_equipo LIKE 'C%' AND codigo IN (
 		WHERE peso > 250);
 
 --Ejercicio 08
+SELECT nombre
+FROM estadistica
+INNER JOIN jugador ON jugador.codigo = estadistica.jugador
+WHERE temporada = '06/07' AND puntos_por_partido > (
+	SELECT AVG(puntos_por_partido)
+	FROM estadistica
+	WHERE temporada = '06/07');
+
+--Ejercicio 09
+SELECT nombre
+FROM jugador
+WHERE codigo IN(
+	SELECT jugador
+	FROM estadistica
+	WHERE rebotes_por_partido >= 1 AND temporada = '07/08');
+
+--Ejercicio 10
+SELECT nombre
+FROM jugador
+WHERE codigo IN(
+	SELECT jugador
+	FROM estadistica
+	WHERE puntos_por_partido > 10 AND temporada = '04/05');
+
+--Ejercicio 11
+SELECT nombre
+FROM jugador
+WHERE codigo IN (
+	SELECT jugador
+	FROM estadistica
+	WHERE asistencias_por_partido < 3 AND temporada = '03/04');
+
+--Ejercicio 12
+SELECT nombre
+FROM jugador
+INNER JOIN estadistica ON jugador.codigo = estadistica.jugador
+WHERE temporada = '07/08' AND puntos_por_partido >(
+	SELECT AVG(puntos_por_partido)
+	FROM estadistica
+	WHERE temporada = '07/08');
+
+--Ejercico 13
+SELECT jugador.nombre
+FROM jugador
+WHERE jugador.codigo IN(
+	SELECT jugador
+	FROM estadistica
+	WHERE puntos_por_partido <= (
+		SELECT AVG(puntos_por_partido)
+		FROM estadistica
+		WHERE puntos_por_partido <= 10));
