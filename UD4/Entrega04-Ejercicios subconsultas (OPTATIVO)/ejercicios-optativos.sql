@@ -117,12 +117,44 @@ WHERE temporada = '07/08' AND puntos_por_partido >(
 	WHERE temporada = '07/08');
 
 --Ejercico 13
+SELECT *
+FROM jugador
+WHERE jugador.codigo IN (
+	SELECT estadistica.jugador 
+	FROM estadistica
+	GROUP BY jugador
+	HAVING AVG(puntos_por_partido) >= 10)
+	AND jugador.nombre_equipo IN (
+		SELECT equipo.nombre
+		FROM equipo
+		INNER JOIN partido ON partido.equipo_visitante = equipo.nombre
+		WHERE equipo.conferencia = 'East')ORDER BY jugador.codigo ASC;
+
+--Ejercicio 14
 SELECT jugador.nombre
 FROM jugador
-WHERE jugador.codigo IN(
+WHERE codigo IN (
 	SELECT jugador
 	FROM estadistica
-	WHERE puntos_por_partido <= (
+	WHERE temporada = '07/08' AND puntos_por_partido >= (
 		SELECT AVG(puntos_por_partido)
 		FROM estadistica
-		WHERE puntos_por_partido <= 10));
+		WHERE temporada = '07/08'));
+
+--Ejercicio 15
+SELECT nombre 
+FROM jugador
+WHERE codigo IN(
+	SELECT jugador
+	FROM estadistica
+	WHERE temporada = '05/06' AND asistencias_por_partido < 5);
+
+--Ejercicio 16
+SELECT nombre 
+FROM jugador
+INNER JOIN estadistica ON estadistica.jugador = jugador.codigo
+WHERE puntos_por_partido > (
+	SELECT AVG(puntos_por_partido)
+	FROM estadistica
+	INNER JOIN jugador ON jugador.codigo = estadistica.jugador
+	WHERE nombre_equipo = 'Raptors') GROUP BY nombre;
