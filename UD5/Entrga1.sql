@@ -90,6 +90,123 @@ BEGIN
 		PRINT 'El cliente con ID ' + CAST(@clienteID AS NVARCHAR)+ ' es un cliente' + @tipoCliente;
 END
 
+--Ejercicio 06
+USE universidad;
+
+BEGIN
+	DECLARE @numero_alumno INT;
+	DECLARE @nombre_grado NVARCHAR (100);
+	SET @nombre_grado = 'Grado en Ingeniería Informática (Plan 2015)'; 
+
+	SELECT @numero_alumno = COUNT(DISTINCT alumno_se_matricula_asignatura.id_alumno)
+	FROM alumno_se_matricula_asignatura
+	INNER JOIN asignatura ON asignatura.id = alumno_se_matricula_asignatura.id_asignatura
+	INNER JOIN grado ON grado.id = asignatura.id_grado
+	WHERE grado.nombre = @nombre_grado
+
+	PRINT 'Grado: ' + @nombre_grado + ' - Total de estudiantes inscritos: ' + CAST(@numero_alumno AS NVARCHAR) ;
+END
+
+--Ejercicio 07
+BEGIN 
+	DECLARE @numeros_alumnos INT;
+	DECLARE @nombre_asignatutra NVARCHAR(100);
+	SET @nombre_asignatutra = 'Introducción a la programación'
+	
+	SELECT @numeros_alumnos = COUNT(DISTINCT id_alumno)
+	FROM alumno_se_matricula_asignatura
+	INNER JOIN asignatura ON alumno_se_matricula_asignatura.id_asignatura = asignatura.id
+	WHERE asignatura.nombre = @nombre_asignatutra;
+
+	PRINT 'Asignatura: ' + @nombre_asignatutra + ' - Total de estudiantes inscritos: ' + CAST(@numeros_alumnos AS NVARCHAR) ;
+END 
+
+--Ejercicio 08
+BEGIN 
+	DECLARE @num_alumnos INT;
+	DECLARE @nombreAsignatura NVARCHAR(100);
+	SET @nombreAsignatura = 'Física para informática'
+	
+	SELECT @num_alumnos = COUNT(DISTINCT id_alumno)
+	FROM alumno_se_matricula_asignatura
+	INNER JOIN asignatura ON alumno_se_matricula_asignatura.id_asignatura = asignatura.id
+	WHERE asignatura.nombre = @nombreAsignatura;
+
+	DECLARE @alumno INT;
+	SELECT @alumno = COUNT(DISTINCT id_alumno)
+	FROM alumno_se_matricula_asignatura
+	INNER JOIN persona ON persona.id = alumno_se_matricula_asignatura.id_alumno
+	INNER JOIN asignatura ON asignatura.id = alumno_se_matricula_asignatura.id_asignatura
+	WHERE persona.sexo = 'H' AND asignatura.nombre = @nombreAsignatura;
+
+	DECLARE @alumna INT;
+	SELECT @alumna = COUNT(DISTINCT id_alumno)
+	FROM alumno_se_matricula_asignatura
+	INNER JOIN persona ON persona.id = alumno_se_matricula_asignatura.id_alumno
+	INNER JOIN asignatura ON asignatura.id = alumno_se_matricula_asignatura.id_asignatura
+	WHERE persona.sexo = 'M' AND asignatura.nombre = @nombreAsignatura;
+
+	PRINT 'Total de alumnos matriculado en ' + @nombreAsignatura +' '+ CAST(@num_alumnos AS NVARCHAR) ;
+	IF (@num_alumnos != 0)
+	BEGIN
+		PRINT 'Total de alumnos matriculados : ' + CAST(@alumno AS NVARCHAR);
+		PRINT 'Total de alumnas matriculadas : ' + CAST(@alumna AS NVARCHAR);
+	END
+END
+
+--Ejercicio 09
+BEGIN 
+	DECLARE @nombre_profesor NVARCHAR(100)
+	DECLARE @asignatura NVARCHAR(100);
+	SET @asignatura = 'Bioinformática'
+
+	SELECT @asignatura = asignatura.nombre, @nombre_profesor = CONCAT(persona.nombre ,' ', persona.apellido1, ' ', persona.apellido2) 
+	FROM asignatura
+	INNER JOIN profesor ON profesor.id_profesor = asignatura.id_profesor
+	INNER JOIN persona ON persona.id = profesor.id_profesor
+	WHERE asignatura.nombre = @asignatura
+
+	DECLARE @id_profesor INT;
+	SET @id_profesor = (SELECT id_profesor
+					   FROM asignatura
+					   WHERE nombre = @asignatura);
+
+	IF(@id_profesor IS NULL)
+	BEGIN
+		PRINT 'Profesor que imparte la asignatura "' + @asignatura +'": Sin profesor';
+	END
+	ELSE
+	BEGIN
+		PRINT 'Profesor que imparte la asignatura "' + @asignatura +'": ' + @nombre_profesor
+	END
+END
+
+--Ejercicio 10
+BEGIN 
+	DECLARE @asignaturas NVARCHAR(100);
+	DECLARE @estudiantes NVARCHAR(100);
+	DECLARE @estudiantes_matriculados BIT ;
+	DECLARE @nombre_estrudiantes NVARCHAR(100);
+
+	SET @nombre_estrudiantes = 'Salvador Sanchez';
+	SET @asignaturas = 'Álgegra lineal y matemática discreta';
+	SET @estudiantes_matriculados = (SELECT COUNT(persona.id)
+									 FROM persona
+									 INNER JOIN alumno_se_matricula_asignatura ON alumno_se_matricula_asignatura.id_alumno = persona.id
+									 INNER JOIN asignatura ON asignatura.id = alumno_se_matricula_asignatura.id_asignatura
+									 WHERE CONCAT(persona.nombre , ' ', persona.apellido1) = @estudiantes 
+									 AND @asignaturas = asignatura.nombre);
+
+	IF(@estudiantes_matriculados = 0)
+	BEGIN
+		PRINT 'El estudiante ' + @estudiantes + 'NO esta matriculado en ' + @asignaturas;
+	END
+	ELSE 
+	BEGIN
+		PRINT 'El estudiante ' + @estudiantes + 'SI esta matriculado en ' + @asignaturas;
+	END
+END
+
 
 			
 
