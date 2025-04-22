@@ -57,18 +57,197 @@ CREATE OR ALTER PROCEDURE ejercicio_03
 		IF @hombre = 'H' OR @mujer = 'M'
 		BEGIN 
 			SET @salida = 'El profesor ha sido asignado al departamento correctamente.';
+		END
+		ELSE
+		BEGIN
 			SET @salida = 'La profesora ha sido asignada al departamento correctamente.';
 		END
-		ELSE 
+
 	END
+
+
+	
+--Ejercicio 04
+CREATE OR ALTER PROCEDURE ejercicio04
+	@nombre_grado NVARCHAR(100)
+	AS
+	BEGIN
+		DECLARE @grado_existe BIT;
+
+		SET @grado_existe = (SELECT COUNT(*) 
+							FROM grado 
+							WHERE id = 11);
+
+		IF @grado_existe = 1
+		BEGIN 
+			THROW 50004, 'ERROR: El grado con ese ID ya existe.', 1;
+		END
+		ELSE 
+		BEGIN
+			INSERT INTO grado(nombre) VALUES(@nombre_grado);
+		END
+	END
+
+	BEGIN 
+		BEGIN TRY 
+			EXEC ejercicio04 @nombre_grado = 'Grado en Carpinteria(Plan 2025)';
+		END TRY
+		BEGIN CATCH
+			SELECT 			ERROR_NUMBER() AS ErrorNumber,			ERROR_SEVERITY() AS ErrorSeverity,			ERROR_STATE() AS ErrorState,
+			ERROR_PROCEDURE() AS ErrorProcedure,
+			ERROR_LINE() AS ErrorLine,			ERROR_MESSAGE() AS ErrorMessage;
+		END CATCH
+	END
+	GO
+
+--Ejercicio 05
+CREATE OR ALTER PROCEDURE ejercicio_05
+	@nombre_asignatura NVARCHAR(50)
+	AS
+	BEGIN
+		DECLARE @nombre_completo NVARCHAR(50),
+				@sexo_alumno NVARCHAR(1),
+				@ciudad_alumno NVARCHAR(50);
+
+		DECLARE @asignatura_existe BIT;
+
+		SET @asignatura_existe = (SELECT COUNT(*) 
+									FROM asignatura
+									WHERE nombre = @nombre_asignatura);
+
+		IF @asignatura_existe = 0
+		BEGIN 
+			THROW 50005, 'La asignatura especificada no existe.', 1;
+		END
+
+
+		DECLARE cursor_alumnos CURSOR FOR
+			SELECT CONCAT(persona.nombre, ' ', apellido1, ' ', apellido2) , 
+					ciudad,
+					sexo
+			FROM persona
+			INNER JOIN alumno_se_matricula_asignatura ON persona.id = alumno_se_matricula_asignatura.id_alumno
+			INNER JOIN asignatura ON alumno_se_matricula_asignatura.id_asignatura = asignatura.id
+			WHERE asignatura.nombre = @nombre_asignatura;
+
+		OPEN cursor_alumnos;
+		FETCH NEXT FROM cursor_alumnos INTO @nombre_completo , @ciudad_alumno, @sexo_alumno;
+
+		WHILE @@FETCH_STATUS = 0
+		BEGIN 
+		IF @sexo_alumno = 'M'
+		BEGIN 
+			PRINT 'Alumna: '+ @nombre_completo + ', Ciudad: ' + @ciudad_alumno;
+		END
+		ELSE 
+		BEGIN 
+			PRINT 'Alumno: '+ @nombre_completo + ', Ciudad: ' + @ciudad_alumno;
+		END
+			FETCH NEXT FROM cursor_alumnos INTO @nombre_completo , @ciudad_alumno , @sexo_alumno;
+		END
+
+		CLOSE cursor_alumnos;
+		DEALLOCATE cursor_alumnos;
+	END
+
+	BEGIN
+		EXEC ejercicio_05 @nombre_asignatura = 'Introducción a la programación';
+	END
+
+--Ejercicio 06
+
+--Ejercicio 07
+CREATE OR ALTER PROCEDURE ejercicio_07
+	@nombre_profesor NVARCHAR(50)
+	AS
+	BEGIN 
+		DECLARE @profesor NVARCHAR(100),
+				@sexo NVARCHAR(1),
+				@asignatura NVARCHAR(100),
+				@grado NVARCHAR(100);
+
+		DECLARE @existe_profesor BIT;
+		SET @existe_profesor = (SELECT COUNT(*)
+								FROM persona
+								INNER JOIN profesor ON profesor.id_profesor = persona.id
+								WHERE persona.nombre = @nombre_profesor);
+
+		IF @existe_profesor = 0
+		BEGIN 
+			THROW 50007, 'El profesor o profesora especificado/a no existe.', 1;
+		END
+		
+		DECLARE cursor_profesor CURSOR FOR
+		SELECT CONCAT(persona.nombre, ' ', apellido1, ' ', apellido2) AS nombreCompleto, 
+				persona.sexo,
+				asignatura.nombre,
+				grado.nombre
+		FROM persona
+		INNER JOIN profesor ON profesor.id_profesor = persona.id
+		INNER JOIN asignatura ON asignatura.id_profesor = profesor.id_profesor
+		INNER JOIN grado ON asignatura.id_grado = grado.id
+		WHERE persona.nombre = @nombre_profesor;
+
+		OPEN cursor_profesor;
+		FETCH NEXT FROM cursor_profesor INTO @profesor , @sexo, @asignatura, @grado;
+
+		IF @sexo = 'M'
+				BEGIN 
+					PRINT 'Profesora: ' + @profesor;
+				END
+			ELSE 
+				BEGIN 
+					PRINT 'Profesor: ' + @profesor;
+				END
+
+			PRINT 'Lista de asignaturas impartidas: ';
+		WHILE @@FETCH_STATUS = 0
+		BEGIN 
+			PRINT 'Asignatura : ' + @asignatura + ' (Grado: ' + @grado + ' )';
+			FETCH NEXT FROM cursor_profesor INTO @profesor , @sexo, @asignatura, @grado;
+		END
+
+		CLOSE cursor_profesor;
+		DEALLOCATE cursor_profesor;
+
+	END
+	GO;
 	
 
-	
+	BEGIN 
+		EXEC ejercicio_07 @nombre_profesor = 'Zoe';
+	END
 
-	SELECT COUNT(*) 
-	FROM departamento
-	INNER JOIN profesor ON profesor.id_departamento = departamento.id
-	WHERE profesor.id_profesor = 3
+USE NBAv2;
+--Ejercicio 01
+CREATE OR ALTER PROCEDURE ejercicio01
+	@nombre_equipo NVARCHAR(50)
+	AS
+	BEGIN 
+		DECLARE @equipo_existe BIT;
+		SET @equipo_existe = (SELECT COUNT(*)
+								FROM equipo
+								WHERE nombre = @nombre_equipo );
+		IF @equipo_existe = 0
+		BEGIN 
+			THROW 50011, 'El equipo no existe en la base de datos', 1;
+		END
+		DECLARE @ciudad NVARCHAR(50),
+				@equipo NVARCHAR(50);
+
+		SELECT @equipo = nombre , @ciudad= equipo.ciudad
+		FROM equipo
+		WHERE equipo.nombre = @nombre_equipo;
+
+		PRINT 'La ciudad del equipo ' + @equipo + ' es : ' + @ciudad;
+	END
+
+	BEGIN 
+		EXEC ejercicio01 @nombre_equipo = 'Raptors'
+	END;
+
+--Ejercicio 02 
 
 
-	SELECT * FROM profesor
+
+
