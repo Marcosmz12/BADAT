@@ -247,7 +247,126 @@ CREATE OR ALTER PROCEDURE ejercicio01
 	END;
 
 --Ejercicio 02 
+CREATE OR ALTER PROCEDURE ejercicio02_NBA
+	@equipo NVARCHAR(50),
+	@temporada NVARCHAR(20)
+	AS
+	BEGIN 
+		DECLARE @equipo_existe BIT,
+				@tempora_existe BIT;
+
+		SET @tempora_existe = ( SELECT COUNT(*)
+								FROM jugador_equipo
+								WHERE temporada = @temporada);
+		IF @tempora_existe = 0
+		BEGIN 
+			PRINT 'No hay partidos para el equipo ' + @equipo + ' en la temporada ' + @temporada;
+
+		END
+
+		SET @equipo_existe = ( SELECT COUNT(*)
+								FROM equipo
+								WHERE nombre = @equipo);
+		IF @equipo_existe = 0
+		BEGIN 
+			THROW 50012, 'El equipo no existe en la base de datos.', 1;
+		END
+
+		DECLARE @jugador NVARCHAR(50),
+				@temporada1 NVARCHAR(20),
+				@nombre_equipo NVARCHAR(50);
+
+		DECLARE cursor_equipos CURSOR FOR
+		SELECT jugador.nombre , jugador_equipo.temporada , equipo.nombre
+		FROM jugador
+		INNER JOIN jugador_equipo ON jugador.codigo = jugador_equipo.codigo_jugador
+		INNER JOIN equipo ON equipo.codigo = jugador_equipo.codigo_equipo
+		WHERE equipo.nombre = @equipo AND temporada = @temporada;
+
+		OPEN cursor_equipos;
+		FETCH NEXT FROM cursor_equipos INTO @jugador, @temporada1, @nombre_equipo;
+
+		PRINT 'Jugadores del equipo ' + @nombre_equipo + ' en la temporada: ' + @temporada1;
+		PRINT '----------------------------------------------------------------------------';
+		WHILE @@FETCH_STATUS = 0
+		BEGIN 
+			PRINT 'Nombre: '+ @jugador;
+			FETCH NEXT FROM cursor_equipos INTO @jugador, @temporada1, @nombre_equipo;
+		END
+
+		CLOSE cursor_equipos;
+		DEALLOCATE cursor_equipos;
+	END
 
 
+	BEGIN 
+		EXEC ejercicio02_NBA @equipo = 'Lakers', @temporada = '2029-30';
+	END
+	
+--Ejercicio 03
+CREATE OR ALTER PROCEDURE ejercicio03_NBA
+	@equipo NVARCHAR(50),
+	@temporada NVARCHAR(50),
+	@posicion NVARCHAR(50)
+	AS
+	BEGIN 
+		DECLARE @equipo_existe BIT,
+				@tempora_existe BIT,
+				@posicion_existe BIT;
+
+		SET @posicion_existe = (SELECT COUNT(*)
+								FROM jugador_equipo
+								WHERE posicion = @posicion);
+
+		IF @posicion_existe = 0
+		BEGIN 
+			PRINT 'No hay jugadores para el equipo ' + @equipo + ' en la temporada '+ @temporada + ' con la posicion ' + @posicion;
+		END
+
+		SET @tempora_existe = ( SELECT COUNT(*)
+								FROM jugador_equipo
+								WHERE temporada = @temporada);
+		IF @tempora_existe = 0
+		BEGIN 
+			PRINT 'No hay partidos para el equipo ' + @equipo + ' en la temporada ' + @temporada;
+		END
+
+		SET @equipo_existe = ( SELECT COUNT(*)
+								FROM equipo
+								WHERE nombre = @equipo);
+		IF @equipo_existe = 0
+		BEGIN 
+			THROW 50012, 'El equipo no existe en la base de datos.', 1;
+		END
+		DECLARE @jugador NVARCHAR(50),
+				@temporada1 NVARCHAR(20),
+				@nombre_equipo NVARCHAR(50),
+				@posicion1 NVARCHAR(50);
+
+		DECLARE cursor_posicion CURSOR FOR
+			SELECT jugador.nombre, jugador_equipo.temporada, jugador_equipo.posicion, equipo.nombre
+			FROM jugador
+			INNER JOIN jugador_equipo ON jugador.codigo = jugador_equipo.codigo_jugador
+			INNER JOIN equipo ON jugador_equipo.codigo_equipo = equipo.codigo
+			WHERE equipo.nombre = @equipo AND temporada = @temporada AND posicion = @posicion;
+
+		OPEN cursor_posicion ;
+		FETCH NEXT FROM cursor_posicion INTO @jugador, @temporada1, @posicion1, @nombre_equipo;
+
+		PRINT 'Jugadores del equipo ' + @nombre_equipo + ' en la temporada ' + @temporada1 + ' con la posicion de ' + @posicion1;
+		PRINT '---------------------------------------------------------------';
+		WHILE @@FETCH_STATUS = 0
+		BEGIN 
+			PRINT @jugador;
+			FETCH NEXT FROM cursor_posicion INTO @jugador, @temporada1, @nombre_equipo, @posicion1;
+		END
+
+		CLOSE cursor_posicion;
+		DEALLOCATE cursor_posicion;
+	END
+
+BEGIN 
+	EXEC ejercicio03_NBA @equipo = 'Lakers', @temporada = '2022-23', @posicion = 'PIVOT_ALERo'
+END
 
 
