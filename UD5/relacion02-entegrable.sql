@@ -1,5 +1,4 @@
-<<<<<<< HEAD
---Marcos Molis Zapata 1º DAM(T)
+--Marcos Molis Zapata 1Âº DAM(T)
 USE universidad;
 --Ejercicio 01
 CREATE OR ALTER PROCEDURE ejercicio_01
@@ -34,7 +33,7 @@ CREATE OR ALTER PROCEDURE ejercicio_02
 	END
 
 BEGIN
-	EXEC ejercicio_02 @nif ='54533994M', @nombre = 'Marcos', @apellido1 = 'Molis', @apellido2 = 'Zapata', @ciudad = 'Vélez-Málaga', @direccion = 'C/ Juan Vazquez Reginfo', @telefono = '6585645406' , @fecha_nacimiento = '04/12/2003', @sexo = 'H', @tipo = 'alumno';
+	EXEC ejercicio_02 @nif ='54533994M', @nombre = 'Marcos', @apellido1 = 'Molis', @apellido2 = 'Zapata', @ciudad = 'VÃ©lez-MÃ¡laga', @direccion = 'C/ Juan Vazquez Reginfo', @telefono = '6585645406' , @fecha_nacimiento = '04/12/2003', @sexo = 'H', @tipo = 'alumno';
 	SELECT * FROM persona
 END
 
@@ -152,7 +151,7 @@ CREATE OR ALTER PROCEDURE ejercicio_05
 	END
 
 	BEGIN
-		EXEC ejercicio_05 @nombre_asignatura = 'Introducción a la programación';
+		EXEC ejercicio_05 @nombre_asignatura = 'IntroducciÃ³n a la programaciÃ³n';
 	END
 
 --Ejercicio 06
@@ -215,7 +214,7 @@ CREATE OR ALTER PROCEDURE ejercicio_06
 	END
 
 BEGIN 
-	 EXEC ejercicio_06 @grado = 'Grado en Ingeniería Informática (Plan 2015)'
+	 EXEC ejercicio_06 @grado = 'Grado en IngenierÃ­a InformÃ¡tica (Plan 2015)'
 END
 
 
@@ -441,7 +440,7 @@ FROM jugador
 INNER JOIN jugador_equipo ON jugador_equipo.codigo_jugador = jugador.codigo
 INNER JOIN estadistica_jugador_temporada ON estadistica_jugador_temporada.
 =======
---Marcos Molis Zapata 1º DAM(T)
+--Marcos Molis Zapata 1Âº DAM(T)
 USE universidad;
 --Ejercicio 01
 CREATE OR ALTER PROCEDURE ejercicio_01
@@ -476,7 +475,7 @@ CREATE OR ALTER PROCEDURE ejercicio_02
 	END
 
 BEGIN
-	EXEC ejercicio_02 @nif ='54533994M', @nombre = 'Marcos', @apellido1 = 'Molis', @apellido2 = 'Zapata', @ciudad = 'Vélez-Málaga', @direccion = 'C/ Juan Vazquez Reginfo', @telefono = '6585645406' , @fecha_nacimiento = '04/12/2003', @sexo = 'H', @tipo = 'alumno';
+	EXEC ejercicio_02 @nif ='54533994M', @nombre = 'Marcos', @apellido1 = 'Molis', @apellido2 = 'Zapata', @ciudad = 'VÃ©lez-MÃ¡laga', @direccion = 'C/ Juan Vazquez Reginfo', @telefono = '6585645406' , @fecha_nacimiento = '04/12/2003', @sexo = 'H', @tipo = 'alumno';
 	SELECT * FROM persona
 END
 
@@ -536,9 +535,13 @@ CREATE OR ALTER PROCEDURE ejercicio04
 			EXEC ejercicio04 @nombre_grado = 'Grado en Carpinteria(Plan 2025)';
 		END TRY
 		BEGIN CATCH
-			SELECT 			ERROR_NUMBER() AS ErrorNumber,			ERROR_SEVERITY() AS ErrorSeverity,			ERROR_STATE() AS ErrorState,
+			SELECT 
+			ERROR_NUMBER() AS ErrorNumber,
+			ERROR_SEVERITY() AS ErrorSeverity,
+			ERROR_STATE() AS ErrorState,
 			ERROR_PROCEDURE() AS ErrorProcedure,
-			ERROR_LINE() AS ErrorLine,			ERROR_MESSAGE() AS ErrorMessage;
+			ERROR_LINE() AS ErrorLine,
+			ERROR_MESSAGE() AS ErrorMessage;
 		END CATCH
 	END
 	GO
@@ -594,7 +597,7 @@ CREATE OR ALTER PROCEDURE ejercicio_05
 	END
 
 	BEGIN
-		EXEC ejercicio_05 @nombre_asignatura = 'Introducción a la programación';
+		EXEC ejercicio_05 @nombre_asignatura = 'IntroducciÃ³n a la programaciÃ³n';
 	END
 
 --Ejercicio 06
@@ -811,6 +814,3 @@ CREATE OR ALTER PROCEDURE ejercicio03_NBA
 BEGIN 
 	EXEC ejercicio03_NBA @equipo = 'Lakers', @temporada = '2022-23', @posicion = 'PIVOT_ALERo'
 END
-
-
->>>>>>> bdcf68ebfd48075b5308f3995ed251ddb078fd2a
