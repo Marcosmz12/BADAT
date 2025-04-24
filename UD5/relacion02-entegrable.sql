@@ -540,3 +540,126 @@ CREATE OR ALTER PROCEDURE ejercicio_04NBA
 	BEGIN 
 		EXEC ejercicio_04NBA @equipo1 = 'Warriors', @equipo2 = 'Lakers' , @temporada = '2023-24'
 	END
+
+--Ejercicio 05
+CREATE OR ALTER PROCEDURE ejercicio05_NBA 
+	@temporada NVARCHAR(50)
+	AS
+	BEGIN 
+		DECLARE @partidosTotal INT;
+
+        SELECT @partidosTotal = COUNT(*) 
+		FROM partido 
+		WHERE temporada = @temporada;
+
+		IF @partidosTotal = 0
+        BEGIN
+            PRINT 'No hay partidos en la temporada ' + @temporada + '.';
+			RETURN;
+        END
+
+		PRINT 'Hay ' + CAST(@partidosTotal AS NVARCHAR) + ' partidos en la temporada ' + @temporada + ':';
+		PRINT '----------------------------------------------------------------------------------------';
+		
+		DECLARE @equipo_local NVARCHAR(50),
+				@equipo_visitante NVARCHAR(50),
+				@equipo_ganador NVARCHAR(50);
+
+		DECLARE @puntos_local INT,
+				@puntos_visitante INT;
+
+		DECLARE @partido_fecha DATE;
+
+		DECLARE  cursor_partidos CURSOR FOR
+		SELECT e_local.nombre , e_visitante.nombre , partido.fecha , partido.puntos_local, partido.puntos_visitante 
+		FROM partido
+		INNER JOIN equipo e_local ON partido.equipo_local = e_local.codigo
+		INNER JOIN equipo e_visitante ON partido.equipo_visitante = e_visitante.codigo
+		WHERE temporada = @temporada
+		ORDER BY partido.fecha ;
+
+		OPEN cursor_partidos;
+		FETCH NEXT FROM cursor_partidos INTO @equipo_local, @equipo_visitante, @partido_fecha, @puntos_local, @puntos_visitante;
+
+		WHILE @@FETCH_STATUS = 0
+		BEGIN 
+			PRINT '(Local) ' + @equipo_local + ' VS ' + '(Visitante) ' + @equipo_visitante + 
+				'a fecha ' + CAST(@partido_fecha AS NVARCHAR) + '. Puntos Local: ' + 
+				CAST(@puntos_local AS NVARCHAR) + ' / Puntos Visitante: ' +  CAST(@puntos_visitante AS NVARCHAR);
+				IF @puntos_local > @puntos_visitante
+				BEGIN 
+					PRINT 'Ganador: ' + @equipo_local
+				END
+				ELSE
+				BEGIN 
+					PRINT 'Ganador: ' + @equipo_visitante
+				END
+				PRINT '------------------------------------'
+				FETCH NEXT FROM cursor_partidos INTO @equipo_local, @equipo_visitante, @partido_fecha,
+				@puntos_local, @puntos_visitante;
+		END
+
+		CLOSE cursor_partidos;
+		DEALLOCATE cursor_partidos;
+
+	END
+
+BEGIN 
+	EXEC ejercicio05_NBA @temporada = '2026-27';
+END
+
+--Ejercicio 06
+CREATE OR ALTER PROCEDURE ejercicio06_NBA 
+	@temporada NVARCHAR(50)
+	AS
+	BEGIN 
+		DECLARE @temporada_existe INT;
+		SET @temporada_existe =(SELECT temporada
+								FROM estadistica_jugador_temporada
+								WHERE temporada = @temporada);
+
+		IF @temporada_existe = 0
+		BEGIN 
+			PRINT 'No hay datos para la temporada especificada.';
+            RETURN;
+		END
+
+		DECLARE @jugador NVARCHAR(50),
+				@equipo NVARCHAR(50);
+
+		DECLARE @triples DECIMAL(10,2);
+
+		DECLARE cursor_triples CURSOR FOR 
+		SELECT equipo.nombre , jugador.nombre , 
+		MAX(estadistica_jugador_temporada.promedio_triples_temporada)
+		FROM estadistica_jugador_temporada
+		INNER JOIN jugador_equipo ON estadistica_jugador_temporada.id_jugador = jugador_equipo.codigo_jugador
+		INNER JOIN equipo ON equipo.codigo = jugador_equipo.codigo_equipo
+		INNER JOIN jugador ON jugador.codigo = jugador_equipo.codigo_jugador
+		WHERE estadistica_jugador_temporada.temporada = @temporada
+		GROUP BY equipo.nombre , jugador.nombre;
+
+		OPEN cursor_triples;
+		FETCH NEXT FROM cursor_triples INTO @equipo, @jugador, @triples;
+
+		PRINT 'Datos para la temporada ' + @temporada + ':';
+        PRINT '--------------------------------';
+
+		WHILE @@FETCH_STATUS = 0
+		BEGIN 
+			PRINT 'Equipo: ' + @equipo;
+            PRINT 'Jugador: ' + @jugador;
+            PRINT 'Promedio de triples: ' + CAST(@triples AS NVARCHAR);
+            PRINT '------------------------------------------';
+			FETCH NEXT FROM cursor_triples INTO @equipo, @jugador, @triples;
+		END
+
+		CLOSE cursor_triples;
+		DEALLOCATE cursor_triples;
+
+	END
+
+	BEGIN 
+		EXEC ejercicio06_NBA @temporada = '2022-23'
+	END
+
