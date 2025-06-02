@@ -87,16 +87,6 @@ CREATE OR ALTER PROCEDURE ejercicio_03
 BEGIN 
 	EXEC ejercicio_03 @profesor = 'David Schmidt Fisher', @departamento = 'Matemáticas', @sexo_profesor = 'H';
 END
-
-SELECT * 
-FROM persona
-
-SELECT CONCAT(persona.nombre, ' ', persona.apellido1, ' ', persona.apellido2), 
-		persona.sexo , 
-		departamento.nombre
-		FROM persona
-		INNER JOIN profesor ON profesor.id_profesor = persona.id
-		INNER JOIN departamento ON profesor.id_departamento = departamento.id
 	
 --Ejercicio 04
 CREATE OR ALTER PROCEDURE ejercicio04
@@ -303,8 +293,6 @@ CREATE OR ALTER PROCEDURE ejercicio_07
 		DEALLOCATE cursor_profesor;
 
 	END
-	GO;
-	
 
 	BEGIN 
 		EXEC ejercicio_07 @nombre_profesor = 'Zoe';
@@ -353,7 +341,7 @@ CREATE OR ALTER PROCEDURE ejercicio02_NBA
 		IF @tempora_existe = 0
 		BEGIN 
 			PRINT 'No hay partidos para el equipo ' + @equipo + ' en la temporada ' + @temporada;
-
+			RETURN;
 		END
 
 		SET @equipo_existe = ( SELECT COUNT(*)
@@ -392,7 +380,7 @@ CREATE OR ALTER PROCEDURE ejercicio02_NBA
 
 
 	BEGIN 
-		EXEC ejercicio02_NBA @equipo = 'Lakers', @temporada = '2029-30';
+		EXEC ejercicio02_NBA @equipo = 'Lakers', @temporada = '2022-23';
 	END
 	
 --Ejercicio 03
@@ -421,6 +409,7 @@ CREATE OR ALTER PROCEDURE ejercicio03_NBA
 		IF @tempora_existe = 0
 		BEGIN 
 			PRINT 'No hay partidos para el equipo ' + @equipo + ' en la temporada ' + @temporada;
+			RETURN;
 		END
 
 		SET @equipo_existe = ( SELECT COUNT(*)
@@ -458,7 +447,7 @@ CREATE OR ALTER PROCEDURE ejercicio03_NBA
 	END
 
 BEGIN 
-	EXEC ejercicio03_NBA @equipo = 'Lakers', @temporada = '2022-23', @posicion = 'PIVOT_ALERo'
+	EXEC ejercicio03_NBA @equipo = 'Lakers', @temporada = '2022-23', @posicion = 'Alero'
 END
 
 --Ejercicio04
@@ -605,7 +594,7 @@ CREATE OR ALTER PROCEDURE ejercicio05_NBA
 	END
 
 BEGIN 
-	EXEC ejercicio05_NBA @temporada = '2026-27';
+	EXEC ejercicio05_NBA @temporada = '2022-23';
 END
 
 --Ejercicio 06
@@ -613,8 +602,8 @@ CREATE OR ALTER PROCEDURE ejercicio06_NBA
 	@temporada NVARCHAR(50)
 	AS
 	BEGIN 
-		DECLARE @temporada_existe INT;
-		SET @temporada_existe =(SELECT temporada
+		DECLARE @temporada_existe BIT;
+		SET @temporada_existe =(SELECT COUNT(*)
 								FROM estadistica_jugador_temporada
 								WHERE temporada = @temporada);
 
@@ -630,14 +619,18 @@ CREATE OR ALTER PROCEDURE ejercicio06_NBA
 		DECLARE @triples DECIMAL(10,2);
 
 		DECLARE cursor_triples CURSOR FOR 
-		SELECT equipo.nombre , jugador.nombre , 
-		MAX(estadistica_jugador_temporada.promedio_triples_temporada)
-		FROM estadistica_jugador_temporada
-		INNER JOIN jugador_equipo ON estadistica_jugador_temporada.id_jugador = jugador_equipo.codigo_jugador
-		INNER JOIN equipo ON equipo.codigo = jugador_equipo.codigo_equipo
-		INNER JOIN jugador ON jugador.codigo = jugador_equipo.codigo_jugador
-		WHERE estadistica_jugador_temporada.temporada = @temporada
-		GROUP BY equipo.nombre , jugador.nombre;
+		SELECT e.nombre AS nombre_equipo,
+				j.nombre AS nombre_jugador,
+				ejt.promedio_triples_temporada
+		FROM estadistica_jugador_temporada ejt
+		INNER JOIN jugador_equipo je ON ejt.id_jugador = je.codigo_jugador
+		INNER JOIN equipo e ON e.codigo = je.codigo_equipo
+		INNER JOIN jugador j ON j.codigo = je.codigo_jugador
+		WHERE ejt.temporada = @temporada AND ejt.promedio_triples_temporada = (
+        SELECT MAX(ejt2.promedio_triples_temporada)
+        FROM estadistica_jugador_temporada ejt2
+        INNER JOIN jugador_equipo je2 ON ejt2.id_jugador = je2.codigo_jugador
+        WHERE ejt2.temporada = @temporada AND je2.codigo_equipo = je.codigo_equipo) GROUP BY e.nombre, j.nombre, ejt.promedio_triples_temporada  ;
 
 		OPEN cursor_triples;
 		FETCH NEXT FROM cursor_triples INTO @equipo, @jugador, @triples;
